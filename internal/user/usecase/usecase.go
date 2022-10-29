@@ -4,6 +4,7 @@ import (
 	"clean-architecture/internal/user"
 	"clean-architecture/internal/user/models"
 	"context"
+	"errors"
 )
 
 type userUsecase struct {
@@ -30,6 +31,9 @@ func (usecase *userUsecase) CreateUser(ctx context.Context, name string, email s
 	if err := user.Validate(); err != nil {
 		return err
 	}
+	if len(user.Name) < 8 {
+		return errors.New("Field validation: name must be more than 8 characters")
+	}
 	if err := usecase.repository.CreateUser(ctx, &user); err != nil {
 		return err
 	}
@@ -37,9 +41,19 @@ func (usecase *userUsecase) CreateUser(ctx context.Context, name string, email s
 }
 
 func (usecase *userUsecase) UpdateUser(ctx context.Context, id string, name string, email string) error {
+	u := models.User {
+		Name: name,
+		Email: email,
+	}
+	if err := u.Validate(); err != nil {
+		return err
+	}
+	if len(u.Name) < 8 {
+		return errors.New("Field validation: name must be more than 8 characters")
+	}
 	if err := usecase.repository.UpdateUser(ctx, id, map[string]interface{}{
-		"name":  name,
-		"email": email,
+		"name":  u.Name,
+		"email": u.Email,
 	}); err != nil {
 		return err
 	}

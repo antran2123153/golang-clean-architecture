@@ -10,36 +10,25 @@ import (
 	"strings"
 )
 
-const (
-	ErrBadRequest         = "Bad request"
-	ErrEmailAlreadyExists = "User with given email already exists"
-	ErrNoSuchUser         = "User not found"
-	ErrWrongCredentials   = "Wrong Credentials"
-	ErrNotFound           = "Not Found"
-	ErrUnauthorized       = "Unauthorized"
-	ErrForbidden          = "Forbidden"
-	ErrBadQueryParams     = "Invalid query params"
-)
-
 var (
-	BadRequest            = errors.New("Bad request")
-	WrongCredentials      = errors.New("Wrong Credentials")
-	NotFound              = errors.New("Not Found")
-	Unauthorized          = errors.New("Unauthorized")
-	Forbidden             = errors.New("Forbidden")
-	PermissionDenied      = errors.New("Permission Denied")
-	ExpiredCSRFError      = errors.New("Expired CSRF token")
-	WrongCSRFToken        = errors.New("Wrong CSRF token")
-	CSRFNotPresented      = errors.New("CSRF not presented")
-	NotRequiredFields     = errors.New("No such required fields")
-	BadQueryParams        = errors.New("Invalid query params")
-	InternalServerError   = errors.New("Internal Server Error")
-	RequestTimeoutError   = errors.New("Request Timeout")
-	ExistsEmailError      = errors.New("User with given email already exists")
-	InvalidJWTToken       = errors.New("Invalid JWT token")
-	InvalidJWTClaims      = errors.New("Invalid JWT claims")
-	NotAllowedImageHeader = errors.New("Not allowed image header")
-	NoCookie              = errors.New("not found cookie header")
+	ErrBadRequest            = errors.New("bad request")
+	ErrWrongCredentials      = errors.New("wrong credentials")
+	ErrNotFound              = errors.New("not found")
+	ErrUnauthorized          = errors.New("unauthorized")
+	ErrForbidden             = errors.New("forbidden")
+	ErrPermissionDenied      = errors.New("permission denied")
+	ErrExpiredCSRFError      = errors.New("expired csrf token")
+	ErrWrongCSRFToken        = errors.New("wrong csrf token")
+	ErrCSRFNotPresented      = errors.New("csrf not presented")
+	ErrNotRequiredFields     = errors.New("no such required fields")
+	ErrBadQueryParams        = errors.New("invalid query params")
+	ErrInternalServerError   = errors.New("internal server error")
+	ErrRequestTimeoutError   = errors.New("request timeout")
+	ErrExistsEmailError      = errors.New("user with given email already exists")
+	ErrInvalidJWTToken       = errors.New("invalid jwt token")
+	ErrInvalidJWTClaims      = errors.New("invalid jwt claims")
+	ErrNotAllowedImageHeader = errors.New("not allowed image header")
+	ErrNoCookie              = errors.New("not found cookie header")
 )
 
 // Rest error interface
@@ -102,7 +91,7 @@ func NewRestErrorFromBytes(bytes []byte) (RestErr, error) {
 func NewBadRequestError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusBadRequest,
-		ErrError:  BadRequest.Error(),
+		ErrError:  ErrBadRequest.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -111,7 +100,7 @@ func NewBadRequestError(causes interface{}) RestErr {
 func NewNotFoundError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusNotFound,
-		ErrError:  NotFound.Error(),
+		ErrError:  ErrNotFound.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -120,7 +109,7 @@ func NewNotFoundError(causes interface{}) RestErr {
 func NewUnauthorizedError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusUnauthorized,
-		ErrError:  Unauthorized.Error(),
+		ErrError:  ErrUnauthorized.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -129,7 +118,7 @@ func NewUnauthorizedError(causes interface{}) RestErr {
 func NewForbiddenError(causes interface{}) RestErr {
 	return RestError{
 		ErrStatus: http.StatusForbidden,
-		ErrError:  Forbidden.Error(),
+		ErrError:  ErrForbidden.Error(),
 		ErrCauses: causes,
 	}
 }
@@ -138,7 +127,7 @@ func NewForbiddenError(causes interface{}) RestErr {
 func NewInternalServerError(causes interface{}) RestErr {
 	result := RestError{
 		ErrStatus: http.StatusInternalServerError,
-		ErrError:  InternalServerError.Error(),
+		ErrError:  ErrInternalServerError.Error(),
 		ErrCauses: causes,
 	}
 	return result
@@ -148,23 +137,23 @@ func NewInternalServerError(causes interface{}) RestErr {
 func ParseErrors(err error) RestErr {
 	switch {
 	case errors.Is(err, sql.ErrNoRows):
-		return NewRestError(http.StatusNotFound, NotFound.Error(), err)
+		return NewRestError(http.StatusNotFound, ErrNotFound.Error(), err)
 	case errors.Is(err, context.DeadlineExceeded):
-		return NewRestError(http.StatusRequestTimeout, RequestTimeoutError.Error(), err)
+		return NewRestError(http.StatusRequestTimeout, ErrRequestTimeoutError.Error(), err)
 	case strings.Contains(err.Error(), "SQLSTATE"):
 		return parseSqlErrors(err)
 	case strings.Contains(err.Error(), "Field validation"):
 		return parseValidatorError(err)
 	case strings.Contains(err.Error(), "Unmarshal"):
-		return NewRestError(http.StatusBadRequest, BadRequest.Error(), err)
+		return NewRestError(http.StatusBadRequest, ErrBadRequest.Error(), err)
 	case strings.Contains(err.Error(), "UUID"):
 		return NewRestError(http.StatusBadRequest, err.Error(), err)
 	case strings.Contains(strings.ToLower(err.Error()), "cookie"):
-		return NewRestError(http.StatusUnauthorized, Unauthorized.Error(), err)
+		return NewRestError(http.StatusUnauthorized, ErrUnauthorized.Error(), err)
 	case strings.Contains(strings.ToLower(err.Error()), "token"):
-		return NewRestError(http.StatusUnauthorized, Unauthorized.Error(), err)
+		return NewRestError(http.StatusUnauthorized, ErrUnauthorized.Error(), err)
 	case strings.Contains(strings.ToLower(err.Error()), "bcrypt"):
-		return NewRestError(http.StatusBadRequest, BadRequest.Error(), err)
+		return NewRestError(http.StatusBadRequest, ErrBadRequest.Error(), err)
 	default:
 		if restErr, ok := err.(RestErr); ok {
 			return restErr
@@ -175,22 +164,26 @@ func ParseErrors(err error) RestErr {
 
 func parseSqlErrors(err error) RestErr {
 	if strings.Contains(err.Error(), "23505") {
-		return NewRestError(http.StatusBadRequest, ExistsEmailError.Error(), err)
+		return NewRestError(http.StatusBadRequest, ErrExistsEmailError.Error(), err)
 	}
 
-	return NewRestError(http.StatusBadRequest, BadRequest.Error(), err)
+	return NewRestError(http.StatusBadRequest, err.Error(), err)
 }
 
 func parseValidatorError(err error) RestErr {
-	if strings.Contains(err.Error(), "Password") {
+	if strings.Contains(err.Error(), "password") {
 		return NewRestError(http.StatusBadRequest, "Invalid password, min length 6", err)
 	}
 
-	if strings.Contains(err.Error(), "Email") {
+	if strings.Contains(err.Error(), "email") {
 		return NewRestError(http.StatusBadRequest, "Invalid email", err)
 	}
 
-	return NewRestError(http.StatusBadRequest, BadRequest.Error(), err)
+	if strings.Contains(err.Error(), "name") {
+		return NewRestError(http.StatusBadRequest, "Invalid name", err)
+	}
+
+	return NewRestError(http.StatusBadRequest, err.Error(), err)
 }
 
 // Error response

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"strings"
 	"time"
 
@@ -17,6 +18,7 @@ type User struct {
 }
 
 func (u *User) PrepareCreate() error {
+	u.Name = strings.ToLower(strings.TrimSpace(u.Name))
 	u.Email = strings.ToLower(strings.TrimSpace(u.Email))
 	u.CreatedAt = time.Now()
 	u.UpdatedAt = time.Now()
@@ -29,5 +31,11 @@ func (user *User) GenerateID() error {
 }
 
 func (user *User) Validate() error {
+	if user.Name == "" {
+		return errors.New("Field validation: name is not null")
+	}
+	if user.Email == "" {
+		return errors.New("Field validation: email is not null")
+	}
 	return nil
 }
