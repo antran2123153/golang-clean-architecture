@@ -1,0 +1,25 @@
+server:
+  AppVersion: 1.0.0
+  Port: :8080
+  Mode: Development
+  JwtSecretKey: secretkey
+  ReadTimeout: 5
+  WriteTimeout: 5
+  Debug: true
+
+postgres:
+  PostgresqlHost: localhost
+  PostgresqlPort: 5432
+  PostgresqlUser: root
+  PostgresqlPassword: 0407261560821Tla
+  PostgresqlDbname: clean_architecture
+  PostgresqlSslmode: false
+  PostgresqlTimezone: UTC
+
+mysql:
+  MySQLHost: localhost
+  MySQLPort: 3306
+  MySQLUser: root
+  MySQLPassword: 0407261560821Tla
+  MySQLDbname: clean_architecture
+  MySQLSSLMode: false
