@@ -10,8 +10,8 @@ server:
 postgres:
   PostgresqlHost: localhost
   PostgresqlPort: 5432
-  PostgresqlUser: root
-  PostgresqlPassword: 0407261560821Tla
+  PostgresqlUser: test
+  PostgresqlPassword: 12345678
   PostgresqlDbname: clean_architecture
   PostgresqlSslmode: false
   PostgresqlTimezone: UTC
@@ -19,7 +19,7 @@ postgres:
 mysql:
   MySQLHost: localhost
   MySQLPort: 3306
-  MySQLUser: root
-  MySQLPassword: 0407261560821Tla
+  MySQLUser: test
+  MySQLPassword: 12345678
   MySQLDbname: clean_architecture
   MySQLSSLMode: false
