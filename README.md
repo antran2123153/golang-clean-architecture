@@ -8,3 +8,20 @@
 - Mocking framework: [gomock](https://github.com/golang/mock)
 
 <img src="https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg" width="500"/>
+
+
+# Command
+```
+go fmt ./...
+
+go run cmd/api/main.go
+
+go run cmd/migrate/main.go
+
+swag init -g cmd/api/main.go
+
+mockgen -source="internal/user/repository.go" -destination="internal/user/mock/repository.go" -package=mock
+
+mockgen -source="internal/user/usecase.go" -destination="internal/user/mock/usecase.go" -package=mock
+
+```

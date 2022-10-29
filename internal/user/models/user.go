@@ -3,6 +3,8 @@ package models
 import (
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type User struct {
@@ -22,6 +24,7 @@ func (u *User) PrepareCreate() error {
 }
 
 func (user *User) GenerateID() error {
+	user.ID = uuid.NewString()
 	return nil
 }
 

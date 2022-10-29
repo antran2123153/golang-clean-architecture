@@ -17,10 +17,17 @@ func NewUserHandler(usecase user.UseCase) *userHandler {
 	return &userHandler{usecase: usecase}
 }
 
+// CreateUser godoc
+// @Summary      Create new user
+// @Description  Create new user with user name and email
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Router       /users [post]
 func (handler *userHandler) CreateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var request presenter.CreateUser
-		if err := ctx.Bind(request); err != nil {
+		if err := ctx.Bind(&request); err != nil {
 			ctx.JSON(http_errors.ErrorResponse(err))
 			return
 		}
@@ -32,10 +39,18 @@ func (handler *userHandler) CreateUser() gin.HandlerFunc {
 	}
 }
 
+// UpdateUser godoc
+// @Summary      Update  user
+// @Description  Update user by user_id
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user_id  path  string  true  "User ID"
+// @Router       /users/:user_id [put]
 func (handler *userHandler) UpdateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var request presenter.UpdateUser
-		if err := ctx.Bind(request); err != nil {
+		if err := ctx.Bind(&request); err != nil {
 			ctx.JSON(http_errors.ErrorResponse(err))
 			return
 		}
@@ -49,6 +64,15 @@ func (handler *userHandler) UpdateUser() gin.HandlerFunc {
 	}
 }
 
+// GetUser godoc
+// @Summary      Get user info
+// @Description  Get user info by user_id
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user_id  path      string  true  "User ID"
+// @Success      200      {object}  presenter.User
+// @Router       /users/:user_id [get]
 func (handler *userHandler) GetUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userID := ctx.Param("user_id")
@@ -57,10 +81,26 @@ func (handler *userHandler) GetUser() gin.HandlerFunc {
 			ctx.JSON(http_errors.ErrorResponse(err))
 			return
 		}
-		ctx.JSON(http.StatusOK, user)
+
+		var response presenter.User
+		err = response.MakeUserPresenter(user)
+		if err != nil {
+			ctx.JSON(http_errors.ErrorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusOK, response)
 	}
 }
 
+// GetUsers godoc
+// @Summary      Get list user
+// @Description  Get list user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  presenter.ListUser
+// @Router       /users [get]
 func (handler *userHandler) GetUsers() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		users, err := handler.usecase.GetUsers(ctx.Request.Context())
@@ -68,6 +108,14 @@ func (handler *userHandler) GetUsers() gin.HandlerFunc {
 			ctx.JSON(http_errors.ErrorResponse(err))
 			return
 		}
-		ctx.JSON(http.StatusOK, users)
+
+		var response presenter.ListUser
+		err = response.MakeListUserPresenter(users)
+		if err != nil {
+			ctx.JSON(http_errors.ErrorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusOK, response)
 	}
 }

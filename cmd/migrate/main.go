@@ -11,16 +11,16 @@ import (
 
 func main() {
 	loadConfig()
-	mysqlDB := loadMySQLDB()
-	// postgresDB := loadPosgresDB()
+	// mysqlDB := loadMySQLDB()
+	postgresDB := loadPosgresDB()
 
-	if err := mysqlDB.AutoMigrate(&userModel.User{}); err != nil {
+	if err := postgresDB.AutoMigrate(&userModel.User{}); err != nil {
 		log.Fatal(err)
 	}
 
 	log.Println("Migrate successful")
 }
-
+ 
 func loadConfig() {
 	cfgFile, err := config.LoadConfig("dev.yml")
 	if err != nil {

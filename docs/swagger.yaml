@@ -1,0 +1,91 @@
+definitions:
+  presenter.ListUser:
+    properties:
+      count:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/presenter.User'
+        type: array
+    type: object
+  presenter.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get list user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.ListUser'
+      summary: Get list user
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create new user with user name and email
+      produces:
+      - application/json
+      responses: {}
+      summary: Create new user
+      tags:
+      - users
+  /users/:user_id:
+    get:
+      consumes:
+      - application/json
+      description: Get user info by user_id
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.User'
+      summary: Get user info
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update user by user_id
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update  user
+      tags:
+      - users
+swagger: "2.0"

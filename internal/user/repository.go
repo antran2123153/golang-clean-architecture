@@ -5,7 +5,6 @@ import (
 	"context"
 )
 
-// mockgen -source="internal/user/repository.go" -destination="internal/user/mock/repository.go" -package=mock
 type Repository interface {
 	CreateUser(ctx context.Context, user *models.User) error
 	UpdateUser(ctx context.Context, userID string, userUpdate map[string]interface{}) error

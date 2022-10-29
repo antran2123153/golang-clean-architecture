@@ -1,32 +1,37 @@
 package main
 
 import (
-	"clean-architecture/config"
-	"clean-architecture/db"
-	userHandler "clean-architecture/internal/user/delivery/http/handler"
-	userRepository "clean-architecture/internal/user/repository"
-	userUsecase "clean-architecture/internal/user/usecase"
 	"log"
 
-	"github.com/gin-gonic/gin"
+	"clean-architecture/config"
+	"clean-architecture/db"
+	userService "clean-architecture/internal/user/service"
+	"clean-architecture/docs"
+
 	"gorm.io/gorm"
+	
+	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger" 
+	swaggerFiles "github.com/swaggo/files"
 )
 
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
 	loadConfig()
-	mysqlDB := loadMySQLDB()
-	// postgresDB := loadPosgresDB()
-
-	userRepo := userRepository.NewUserRepository(mysqlDB)
-	userUsecase := userUsecase.NewUserUsecase(userRepo)
-	userHandler := userHandler.NewUserHandler(userUsecase)
+	initSwagger()
+	// mysqlDB := loadMySQLDB()
+	postgresDB := loadPosgresDB()
 
 	r := gin.Default()
 
-	r.POST("users", userHandler.CreateUser())
-	r.GET("users/:user_id", userHandler.GetUser())
-	r.GET("users", userHandler.GetUsers())
-	r.PUT("users/user_id", userHandler.UpdateUser())
+	userService.StartUserService(r, postgresDB)
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	if err := r.Run(); err != nil {
 		log.Fatalf("Server run error: %v", err)
@@ -62,4 +67,13 @@ func loadMySQLDB() *gorm.DB {
 		log.Println("MySQL connected")
 	}
 	return db
+}
+
+func initSwagger() {
+	docs.SwaggerInfo.Title = "Swagger API"
+	docs.SwaggerInfo.Description = "This is a sample server."
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 }

@@ -5,7 +5,6 @@ import (
 	"context"
 )
 
-// mockgen -source="internal/user/usecase.go" -destination="internal/user/mock/usecase.go" -package=mock
 type UseCase interface {
 	CreateUser(ctx context.Context, name string, email string) error
 	UpdateUser(ctx context.Context, id string, name string, email string) error
